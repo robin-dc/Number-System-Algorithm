@@ -1,22 +1,45 @@
 const prompt = require('prompt-sync')()
 
+// ============================================ THOUGHT PROCESS =================================================
+
+// STEPS
+// 1. Check type of category
+//    - If category is Hexa, then convert letters to numbers
+// 3. Separate right and left
+// 4. Proceed to conversion
+//    - Conversion for positive
+//    - Conversion for fractions
+// 5. Join together
+
+// HELPER FUNCTIONS
+// convert letter to number
+// ₀ ₁ ₂ ₃ ₄ ₅ ₆ ₇ ₈ ₉
+
+
 console.log("")
 console.log("--------------------------------- BINARY, OCTAL, HEXADECIMAL CALCULATOR ---------------------------------")
 console.log("")
 console.log("")
 
-const categories = {
-    A : ["Binary", 2, "₂"],
-    B : ["Octal", 8, "₈"],
-    C : ["HexaDecimal", 16, "₁₆", {
-        A: 10,
-        B: 11,
-        C: 12,
-        D: 13,
-        E: 14,
-        F: 15,
-    }],
+const dictionary = {
+    A: 10,
+    B: 11,
+    C: 12,
+    D: 13,
+    E: 14,
+    F: 15,
 }
+
+const categories = {
+    A : ["Binary to Decimal", 2, "₂"],
+    B : ["Octal to Decimal", 8, "₈"],
+    C : ["HexaDecimal to Decimal", 16, "₁₆", dictionary],
+    D : ["Decimal to Binary", 2, "₂"],
+    E : ["Decimal to Octal", 8, "₈"],
+    F : ["Decimal to HexaDecimal", 16, "₁₆", dictionary],
+}
+
+// =========================================== HELPER FUNCTIONS =================================================
 
 function exponent(exp, num){
     let newNum = 1;
@@ -29,7 +52,7 @@ function exponent(exp, num){
 function convertToNumbers(array){
     return array.map(number => {
         if(isNaN(number)) {
-            return number = categories["C"][3][number]
+            return number = categories["C"][3][number.toUpperCase()]
         }
         return number
     })
@@ -44,18 +67,35 @@ function separatedDecimal(array){
 
     return [right, left]
 }
+function checkSpaces(array){
 
-// STEPS
-// 1. Check type of category
-//    - If category is Hexa, then convert letters to numbers
-// 3. Separate right and left
-// 4. Proceed to conversion
-//    - Conversion for positive
-//    - Conversion for fractions
-// 5. Join together
+    for(let i = 0; i < array.length; i++){
+        const num = array[i]
+        const individualArray = num.split("")
 
-// HELPER FUNCTIONS
-// convert letter to number
+        if(individualArray.length > 1) return false
+    }
+    return true
+}
+// =============================================================================================================
+
+// =========================================== NORMAL CONVERSION ===============================================
+function somethingToDecimal(type, right, left){
+    if(!left.length){
+        const positivePolarity = positiveConversion(right, type)
+        console.log("")
+
+        console.log(`Conversion from ${categories[type][0]}: ${positivePolarity} ₁₀`)
+        return
+    }
+    else{
+        const positivePolarity = positiveConversion(right, type)
+        const negativePolarity = fractionConversion(left, type)
+        console.log("")
+
+        console.log(`Conversion from ${categories[type][0]}: ${positivePolarity + negativePolarity} ₁₀`)
+    }
+}
 
 function positiveConversion(array, category){
     const reversedArray = array.reverse()
@@ -96,41 +136,15 @@ function fractionConversion(array, category){
     console.log(`Negative Polarity: ${answer} ₁₀`)
     return answer
 }
+// =============================================================================================================
 
-function getInputNumbers(category){
-    console.log("")
-    const numbers = prompt(`Enter ${categories[category][0]} Numbers separated by spaces: `)
-    console.log("")
-    console.log(`${categories[category][0]}: ${numbers} ${categories[category][2]}`)
-    console.log("")
-    const array = numbers.split(" ")
-    return array
-}
-
-function getCategory(){
-    console.log("A : Binary to Decimal")
-    console.log("B : Octal to Decimal")
-    console.log("C : Hexadecimal to Decimal")
-    console.log("")
-    console.log("")
-
-    const category = prompt("Choose a Category: ")
-    return category.toUpperCase()
-}
-
-// ₀ ₁ ₂ ₃ ₄ ₅ ₆ ₇ ₈ ₉
-
-function process(){
-    const type = getCategory()
-    const input = getInputNumbers(type)
-    const [right, left] = separatedDecimal(input) // returns array that is all numbers
-
-
+// =========================================== VICE VERSA ======================================================
+function decimalToSomething(type, right, left){
     if(!left.length){
         const positivePolarity = positiveConversion(right, type)
         console.log("")
 
-        console.log(`Conversion from ${categories[type][0]} to Decimal: ${positivePolarity} ₁₀`)
+        console.log(`Conversion from ${categories[type][0]}: ${positivePolarity} ₁₀`)
         return
     }
     else{
@@ -138,7 +152,54 @@ function process(){
         const negativePolarity = fractionConversion(left, type)
         console.log("")
 
-        console.log(`Conversion from ${categories[type][0]} to Decimal: ${positivePolarity + negativePolarity} ₁₀`)
+        console.log(`Conversion from ${categories[type][0]}: ${positivePolarity + negativePolarity} ₁₀`)
+    }
+}
+// ============================================================================================================
+
+function getInputNumbers(category){
+    console.log("")
+    while(true){
+        const numbers = prompt(`Enter ${categories[category][0].substring(0, categories[category][0].indexOf(" "))} Numbers separated by spaces: `)
+        const array = numbers.split(" ")
+        if(checkSpaces(array) === false){
+            console.log("Check for digit spaces.")
+        }
+        else {
+            console.log("")
+            console.log(`${categories[category][0]}: ${isNaN(numbers) ? numbers.toUpperCase() : numbers} ${categories[category][2]}`)
+            console.log("")
+            return array
+        }
+    }
+}
+
+function getCategory(){
+    for(let key in categories) {
+        console.log(`${key} : ${categories[key][0]}`)
+    }
+
+    console.log("")
+    console.log("")
+    while(true){
+        const category = prompt("Choose a Category: ").toUpperCase()
+        if(!categories.hasOwnProperty(category)){
+            console.log("Not in the choices.")
+        }
+        else return category
+    }
+}
+
+function process(){
+    const type = getCategory()
+    const input = getInputNumbers(type)
+    const [right, left] = separatedDecimal(input) // returns array that is all numbers
+
+    if(type == "A" || type == "B" || type == "C"){
+        somethingToDecimal(type, right, left)
+    }
+    else{
+        decimalToSomething(type, right, left)
     }
 
     console.log("")
