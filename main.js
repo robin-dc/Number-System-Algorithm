@@ -12,7 +12,7 @@ const prompt = require('prompt-sync')()
 // 5. Join together
 
 // HELPER FUNCTIONS
-// convert letter to number
+// convert letter to number etc.
 // ₀ ₁ ₂ ₃ ₄ ₅ ₆ ₇ ₈ ₉
 
 
@@ -41,7 +41,7 @@ const categories = {
 
 // =========================================== HELPER FUNCTIONS =================================================
 
-function exponent(exp, num){
+function transformExponent(exp, num){ // Transform exponents | e.g. 2₄ --> 32
     let newNum = 1;
     for(let i = 1; i <= exp; i++){
             newNum *= num
@@ -49,7 +49,7 @@ function exponent(exp, num){
 
     return newNum
 }
-function convertToNumbers(array){
+function convertToNumbers(array){ // Transform letters to numbers if any | e.g. A --> 10
     return array.map(number => {
         if(isNaN(number)) {
             return number = categories["C"][3][number.toUpperCase()]
@@ -57,7 +57,7 @@ function convertToNumbers(array){
         return number
     })
 }
-function separatedDecimal(array){
+function separatedDecimal(array){ // Separate numbers if theres a decimal | e.g. 10101.101 --> [ [1,0,1,0,1], [1,0,1] ]
     const indexOfDot = array.indexOf(".")
     if(indexOfDot === -1){
         return [convertToNumbers(array), []]
@@ -67,37 +67,50 @@ function separatedDecimal(array){
 
     return [right, left]
 }
-function checkSpaces(array){
+function checkSpaces(array){ // Input validation
+    // Returns true only if there's no spaces between digits | e.g. 101.0 01 --> false
 
     for(let i = 0; i < array.length; i++){
         const num = array[i]
-        const individualArray = num.split("")
 
-        if(individualArray.length > 1) return false
+        if(num === " ") return false
     }
     return true
 }
+function findValue(value) { // Finds the number large number counterpart in the dictionary | e.g. 13 --> D
+    for (const key in dictionary) {
+      if (dictionary[key] === value) {
+        return key;
+      }
+    }
+  }
+
 // =============================================================================================================
+
 
 // =========================================== NORMAL CONVERSION ===============================================
 function somethingToDecimal(type, right, left){
+    const typeOfCategory = categories[type][0]
+
     if(!left.length){
         const positivePolarity = positiveConversion(right, type)
         console.log("")
 
-        console.log(`Conversion from ${categories[type][0]}: ${positivePolarity} ₁₀`)
+        console.log(`Conversion from ${typeOfCategory}: ${positivePolarity} ₁₀`)
         return
     }
     else{
         const positivePolarity = positiveConversion(right, type)
-        const negativePolarity = fractionConversion(left, type)
+        const negativePolarity = negativeConversion(left, type)
         console.log("")
 
-        console.log(`Conversion from ${categories[type][0]}: ${positivePolarity + negativePolarity} ₁₀`)
+        console.log(`Conversion from ${typeOfCategory}: ${positivePolarity + negativePolarity} ₁₀`)
     }
 }
 
 function positiveConversion(array, category){
+    const radix = categories[category][1]
+
     const reversedArray = array.reverse()
     const allNums = convertToNumbers(reversedArray)
 
@@ -109,16 +122,17 @@ function positiveConversion(array, category){
             return num *= 1
         }
         if(index === 1){
-            return num *= categories[category][1]
+            return num *= radix
         }
-        return num = num * exponent(index, categories[category][1])
+        return num = num * transformExponent(index, radix)
     })
     const answer = exponentForm.reduce((accum, initial) => accum + initial, 0)
     console.log(`Positive Polarity: ${answer} ₁₀`)
     return answer
 }
 
-function fractionConversion(array, category){
+function negativeConversion(array, category){
+    const radix = categories[category][1]
     const allNums = convertToNumbers(array)
 
     const exponentForm = allNums.map((num, index) => {
@@ -126,10 +140,10 @@ function fractionConversion(array, category){
             return num = 0
         }
         if(index === 0){
-            return num = (1000000 / categories[category][1]) * num / 1000000
+            return num = (1000000 / radix) * num / 1000000
         }
 
-        return num = (1000000 / exponent(index + 1, categories[category][1])) * num / 1000000
+        return num = (1000000 / transformExponent(index + 1, radix)) * num / 1000000
     })
 
     const answer = exponentForm.reduce((accum, initial) => accum + initial, 0)
@@ -138,36 +152,114 @@ function fractionConversion(array, category){
 }
 // =============================================================================================================
 
-// =========================================== VICE VERSA ======================================================
+
+// ======================================== VICE VERSA CONVERSION ==============================================
 function decimalToSomething(type, right, left){
+    const typeOfCategory = categories[type][0]
+    const radixSymbol = categories[type][2]
+
     if(!left.length){
-        const positivePolarity = positiveConversion(right, type)
+        const positivePolarity = positiveDecimalConversion(right, type)
         console.log("")
 
-        console.log(`Conversion from ${categories[type][0]}: ${positivePolarity} ₁₀`)
+        console.log(`Conversion from ${typeOfCategory}: ${positivePolarity} ${radixSymbol}`)
         return
     }
     else{
-        const positivePolarity = positiveConversion(right, type)
-        const negativePolarity = fractionConversion(left, type)
+        const positivePolarity = positiveDecimalConversion(right, type)
+        const negativePolarity = negativeDecimalConversion(left, type)
         console.log("")
 
-        console.log(`Conversion from ${categories[type][0]}: ${positivePolarity + negativePolarity} ₁₀`)
+        console.log(`Conversion from ${typeOfCategory}: ${positivePolarity + negativePolarity} ${radixSymbol}`)
     }
+}
+
+function positiveDecimalConversion(array, category){
+    const radix = categories[category][1]
+    const radixSymbol = categories[category][2]
+
+    const allNums = convertToNumbers(array)
+    const number = allNums.join("")
+
+    const answerAsArray = []
+    function conversion(num){
+
+        const remainder = num % radix
+
+        if(remainder > 9){
+            answerAsArray.push(findValue(remainder))
+        }
+        else{
+            answerAsArray.push(remainder)
+        }
+
+        if(num < radix){
+            return
+        }
+        conversion(Math.floor(num / radix))
+    }
+    conversion(number)
+
+    const answer = answerAsArray.reverse().join("")
+    console.log(`Positive Polarity: ${answer} ${radixSymbol}`)
+    return answer
+}
+
+function negativeDecimalConversion(array, category){
+    const radix = categories[category][1]
+    const radixSymbol = categories[category][2]
+
+    const allNums = convertToNumbers(array)
+    const number = allNums.join("")
+
+    const answerAsArray = []
+    let recursion = 0;
+
+    function conversion(num){
+        recursion++
+
+        const carry = Math.floor(num * radix)
+
+        if(carry > 9){
+            answerAsArray.push(findValue(carry))
+        }
+        else{
+            answerAsArray.push(carry)
+        }
+
+        if(recursion === 6){
+            return
+        }
+        const multipliedByRadix = num * radix
+        conversion(multipliedByRadix - Math.floor(multipliedByRadix))
+    }
+    const numDigits = number.toString().length;
+    const decimalValue = number / Math.pow(10, numDigits);
+    conversion(decimalValue)
+
+    const answer = "." + answerAsArray.join("")
+
+    console.log(`Negative Polarity: 0${answer} ${radixSymbol}`)
+    return answer
 }
 // ============================================================================================================
 
+
 function getInputNumbers(category){
+    const typeOfCategory = categories[category][0]
+    const radixSymbol = categories[category][2]
+
     console.log("")
     while(true){
-        const numbers = prompt(`Enter ${categories[category][0].substring(0, categories[category][0].indexOf(" "))} Numbers separated by spaces: `)
-        const array = numbers.split(" ")
+        const numbers = prompt(`Enter ${typeOfCategory.substring(0, typeOfCategory.indexOf(" "))} Numbers: `)
+        const array = numbers.split("")
         if(checkSpaces(array) === false){
             console.log("Check for digit spaces.")
         }
         else {
             console.log("")
-            console.log(`${categories[category][0]}: ${isNaN(numbers) ? numbers.toUpperCase() : numbers} ${categories[category][2]}`)
+            console.log(`${typeOfCategory.substring(0, typeOfCategory.indexOf(" "))}: ${isNaN(numbers) ? numbers.toUpperCase() : numbers} ${
+                typeOfCategory.substring(0, typeOfCategory.indexOf(" ")) == "Decimal" ? "₁₀" : radixSymbol}`)
             console.log("")
             return array
         }
@@ -190,10 +282,15 @@ function getCategory(){
     }
 }
 
-function process(){
+
+
+
+
+// ======================================== ORGANIZED PROCESS ==============================================
+function startProcess(){
     const type = getCategory()
     const input = getInputNumbers(type)
-    const [right, left] = separatedDecimal(input) // returns array that is all numbers
+    const [right, left] = separatedDecimal(input)
 
     if(type == "A" || type == "B" || type == "C"){
         somethingToDecimal(type, right, left)
@@ -207,4 +304,4 @@ function process(){
     console.log("")
 }
 
-process()
+startProcess()
