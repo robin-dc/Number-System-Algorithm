@@ -1,4 +1,5 @@
 const prompt = require('prompt-sync')()
+const colors = require('colors');
 
 // ============================================ THOUGHT PROCESS =================================================
 
@@ -17,7 +18,7 @@ const prompt = require('prompt-sync')()
 
 
 console.log("")
-console.log("--------------------------------- BINARY, OCTAL, HEXADECIMAL CALCULATOR ---------------------------------")
+console.log("--------------------------------- BINARY, OCTAL, HEXADECIMAL CALCULATOR ---------------------------------".green)
 console.log("")
 console.log("")
 
@@ -96,7 +97,7 @@ function somethingToDecimal(type, right, left){
         const positivePolarity = positiveConversion(right, type)
         console.log("")
 
-        console.log(`Conversion from ${typeOfCategory}: ${positivePolarity} ₁₀`)
+        console.log(`Conversion from ${typeOfCategory}: `.cyan, `${positivePolarity} ₁₀`.green)
         return
     }
     else{
@@ -104,7 +105,7 @@ function somethingToDecimal(type, right, left){
         const negativePolarity = negativeConversion(left, type)
         console.log("")
 
-        console.log(`Conversion from ${typeOfCategory}: ${positivePolarity + negativePolarity} ₁₀`)
+        console.log(`Conversion from ${typeOfCategory}: `.cyan, `${positivePolarity + negativePolarity} ₁₀`.green)
     }
 }
 
@@ -127,7 +128,7 @@ function positiveConversion(array, category){
         return num = num * transformExponent(index, radix)
     })
     const answer = exponentForm.reduce((accum, initial) => accum + initial, 0)
-    console.log(`Positive Polarity: ${answer} ₁₀`)
+    console.log("Positive Polarity: ".magenta, `${answer} ₁₀`.grey)
     return answer
 }
 
@@ -147,7 +148,8 @@ function negativeConversion(array, category){
     })
 
     const answer = exponentForm.reduce((accum, initial) => accum + initial, 0)
-    console.log(`Negative Polarity: ${answer} ₁₀`)
+    console.log("Negative Polarity: ".magenta, `${answer} ₁₀`.grey)
+
     return answer
 }
 // =============================================================================================================
@@ -162,7 +164,7 @@ function decimalToSomething(type, right, left){
         const positivePolarity = positiveDecimalConversion(right, type)
         console.log("")
 
-        console.log(`Conversion from ${typeOfCategory}: ${positivePolarity} ${radixSymbol}`)
+        console.log(`Conversion from ${typeOfCategory}: `.cyan, `${positivePolarity} ${radixSymbol}`.green)
         return
     }
     else{
@@ -170,7 +172,7 @@ function decimalToSomething(type, right, left){
         const negativePolarity = negativeDecimalConversion(left, type)
         console.log("")
 
-        console.log(`Conversion from ${typeOfCategory}: ${positivePolarity + negativePolarity} ${radixSymbol}`)
+        console.log(`Conversion from ${typeOfCategory}: `.cyan, `${positivePolarity + negativePolarity} ${radixSymbol}`.green)
     }
 }
 
@@ -201,7 +203,8 @@ function positiveDecimalConversion(array, category){
     conversion(number)
 
     const answer = answerAsArray.reverse().join("")
-    console.log(`Positive Polarity: ${answer} ${radixSymbol}`)
+    console.log("Positive Polarity: ".magenta, `${answer} ${radixSymbol}`.grey)
+
     return answer
 }
 
@@ -239,7 +242,8 @@ function negativeDecimalConversion(array, category){
 
     const answer = "." + answerAsArray.join("")
 
-    console.log(`Negative Polarity: 0${answer} ${radixSymbol}`)
+    console.log("Negative Polarity: ".magenta, `0${answer} ${radixSymbol}`.grey)
+
     return answer
 }
 // ============================================================================================================
@@ -251,15 +255,16 @@ function getInputNumbers(category){
 
     console.log("")
     while(true){
-        const numbers = prompt(`Enter ${typeOfCategory.substring(0, typeOfCategory.indexOf(" "))} Numbers: `)
+        const numbers = prompt(`Enter ${typeOfCategory.substring(0, typeOfCategory.indexOf(" "))} Numbers: `.cyan)
         const array = numbers.split("")
         if(checkSpaces(array) === false){
-            console.log("Check for digit spaces.")
+            console.log("Check for digit spaces.".red)
         }
         else {
             console.log("")
-            console.log(`${typeOfCategory.substring(0, typeOfCategory.indexOf(" "))}: ${isNaN(numbers) ? numbers.toUpperCase() : numbers} ${
-                typeOfCategory.substring(0, typeOfCategory.indexOf(" ")) == "Decimal" ? "₁₀" : radixSymbol}`)
+            console.log(`${typeOfCategory.substring(0, typeOfCategory.indexOf(" ")).magenta}: ${isNaN(numbers) ?
+                numbers.toUpperCase().grey :
+                numbers.grey} ${typeOfCategory.substring(0, typeOfCategory.indexOf(" ")) == "Decimal" ? "₁₀".grey : radixSymbol.grey}`)
             console.log("")
             return array
         }
@@ -268,15 +273,15 @@ function getInputNumbers(category){
 
 function getCategory(){
     for(let key in categories) {
-        console.log(`${key} : ${categories[key][0]}`)
+        console.log(`${colors.yellow(key)} : ${colors.blue(categories[key][0])}`)
     }
 
     console.log("")
     console.log("")
     while(true){
-        const category = prompt("Choose a Category: ").toUpperCase()
+        const category = prompt("Choose a Category: ".cyan).toUpperCase()
         if(!categories.hasOwnProperty(category)){
-            console.log("Not in the choices.")
+            console.log("Not in the choices.".red)
         }
         else return category
     }
