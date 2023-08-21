@@ -48,7 +48,7 @@ cd <project folder>
 
 <br>
 
-## 🚀 Install all dependencies:
+## 📍 Install all dependencies:
 ```sh
 npm install
 ```
