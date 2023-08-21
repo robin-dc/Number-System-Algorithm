@@ -10,7 +10,7 @@ Console Application used to convert Binary, Octal, and Hexadecimal number system
 
 <br>
 
-<img src='https://github.com/robin-dc/Javascript-POS-System/blob/main/images/pos_Step1.png'>
+<img src='https://github.com/robin-dc/Number-System-Algorithm/blob/main/assets/numsystem_preview1.png'>
 
 <br>
 
@@ -18,7 +18,7 @@ Console Application used to convert Binary, Octal, and Hexadecimal number system
 
 <br>
 
-<img src='https://github.com/robin-dc/Javascript-POS-System/blob/main/images/pos_Step2.png'>
+<img src='https://github.com/robin-dc/Number-System-Algorithm/blob/main/assets/numsystem_preview2.png'>
 
 <br>
 
@@ -26,7 +26,7 @@ Console Application used to convert Binary, Octal, and Hexadecimal number system
 
 <br>
 
-<img src='https://github.com/robin-dc/Javascript-POS-System/blob/main/images/pos_Step2.png'>
+<img src='https://github.com/robin-dc/Number-System-Algorithm/blob/main/assets/numsystem_preview3.png'>
 
 <br>
 
