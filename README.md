@@ -22,7 +22,7 @@ Console Application used to convert Binary, Octal, and Hexadecimal number system
 
 <br>
 
-3. Input validations were also provided for ease of use.
+3. Input validations have also been included to enhance ease of use.
 
 <br>
 
